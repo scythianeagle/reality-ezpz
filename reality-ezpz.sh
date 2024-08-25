@@ -1,22 +1,5 @@
 #!/bin/bash
 
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-# 
-#   http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-
 set -e
 declare -A defaults
 declare -A config_file
@@ -32,7 +15,7 @@ declare -A image
 config_path="/opt/reality-ezpz"
 compose_project='reality-ezpz'
 tgbot_project='tgbot'
-BACKTITLE=RealityEZPZ
+BACKTITLE=RealityED
 MENU="Select an option:"
 HEIGHT=30
 WIDTH=60
@@ -48,7 +31,7 @@ image[wgcf]="virb3/wgcf:2.2.18"
 
 defaults[transport]=tcp
 defaults[domain]=www.google.com
-defaults[port]=443
+defaults[port]=445
 defaults[safenet]=OFF
 defaults[warp]=OFF
 defaults[warp_license]=""
@@ -501,8 +484,8 @@ function parse_users_file {
     fi
   fi
   if [[ ${#users[@]} -eq 0 ]]; then
-    users[RealityEZPZ]=$(cat /proc/sys/kernel/random/uuid)
-    echo "RealityEZPZ=${users[RealityEZPZ]}" >> "${path[users]}"
+    users[RealityED]=$(cat /proc/sys/kernel/random/uuid)
+    echo "RealityED=${users[RealityED]}" >> "${path[users]}"
     return 0
   fi
   return 0
@@ -683,7 +666,7 @@ function uninstall {
     docker-compose --project-directory "${config_path}/tgbot" -p ${tgbot_project} down --timeout 2 || true
   fi
   rm -rf "${config_path}"
-  echo "Reality-EZPZ uninstalled successfully."
+  echo "reality-ezpz uninstalled successfully."
   exit 0
 }
 
@@ -1510,7 +1493,7 @@ function upgrade {
   uuid=$(grep '^uuid=' "${path[config]}" 2>/dev/null | cut -d= -f2 || true)
   if [[ -n $uuid ]]; then
     sed -i '/^uuid=/d' "${path[users]}"
-    echo "RealityEZPZ=${uuid}" >> "${path[users]}"
+    echo "RealityED=${uuid}" >> "${path[users]}"
     sed -i 's|=true|=ON|g; s|=false|=OFF|g' "${path[users]}"
   fi
   rm -f "${config_path}/xray.conf"
@@ -2518,31 +2501,31 @@ function generate_file_list {
   done
 }
 
-function tune_kernel {
-  cat >/etc/sysctl.d/99-reality-ezpz.conf <<EOF
-fs.file-max = 200000
-net.core.rmem_max = 67108864
-net.core.wmem_max = 67108864
-net.core.netdev_max_backlog = 250000
-net.core.somaxconn = 4096
-net.ipv4.tcp_syncookies = 1
-net.ipv4.tcp_tw_reuse = 1
-net.ipv4.tcp_fin_timeout = 10
-net.ipv4.tcp_keepalive_time = 600
-net.ipv4.ip_local_port_range = 10000 65000
-net.ipv4.tcp_max_syn_backlog = 8192
-net.ipv4.tcp_max_tw_buckets = 5000
-net.ipv4.tcp_fastopen = 3
-net.ipv4.tcp_mem = 25600 51200 102400
-net.ipv4.tcp_rmem = 4096 65536 67108864
-net.ipv4.tcp_wmem = 4096 65536 67108864
-net.ipv4.tcp_mtu_probing = 1
-net.core.default_qdisc=fq
-net.ipv4.tcp_congestion_control=bbr
-net.netfilter.nf_conntrack_max=1000000
-EOF
-  sysctl -qp /etc/sysctl.d/99-reality-ezpz.conf >/dev/null 2>&1 || true
-}
+# function tune_kernel {
+#  cat >/etc/sysctl.d/99-reality-ezpz.conf <<EOF
+# fs.file-max = 200000
+# net.core.rmem_max = 67108864
+# net.core.wmem_max = 67108864
+# net.core.netdev_max_backlog = 250000
+# net.core.somaxconn = 4096
+# net.ipv4.tcp_syncookies = 1
+# net.ipv4.tcp_tw_reuse = 1
+# net.ipv4.tcp_fin_timeout = 10
+# net.ipv4.tcp_keepalive_time = 600
+# net.ipv4.ip_local_port_range = 10000 65000
+# net.ipv4.tcp_max_syn_backlog = 8192
+# net.ipv4.tcp_max_tw_buckets = 5000
+# net.ipv4.tcp_fastopen = 3
+# net.ipv4.tcp_mem = 25600 51200 102400
+# net.ipv4.tcp_rmem = 4096 65536 67108864
+# net.ipv4.tcp_wmem = 4096 65536 67108864
+# net.ipv4.tcp_mtu_probing = 1
+# net.core.default_qdisc=fq
+# net.ipv4.tcp_congestion_control=bbr
+# net.netfilter.nf_conntrack_max=1000000
+# EOF
+#   sysctl -qp /etc/sysctl.d/99-reality-ezpz.conf >/dev/null 2>&1 || true
+# }
 
 function configure_docker {
   local docker_config="/etc/docker/daemon.json"
