@@ -2596,7 +2596,7 @@ parse_users_file
 build_config
 update_config_file
 update_users_file
-tune_kernel
+# tune_kernel
 
 if [[ ${args[menu]} == 'true' ]]; then
   set +e
